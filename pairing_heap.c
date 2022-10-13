@@ -78,8 +78,17 @@ node* merge_pairs(lnode* root)
 	if(root == NULL)
 		return NULL;
 	if(root->next == NULL)
-		return root->value;
-	meld(meld(root->value, root->next->value), merge_pairs(root->next->next));
+	{
+		node* temp = root->value;
+		free(root);
+		return temp;
+	}
+	node* h1 = root->value;
+	node* h2 = root->next->value;
+	lnode* rest = root->next->next;
+	free(root->next);
+	free(root);
+	return meld(meld(h1, h2), merge_pairs(rest));
 }
 
 node* pop(node* root)
