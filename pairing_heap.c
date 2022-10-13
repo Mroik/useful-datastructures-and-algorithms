@@ -1,6 +1,14 @@
 #include <stdlib.h>
 
-#include "pairing_heap.h"
+typedef struct lnode_r {
+	struct node_r* value;
+	struct lnode_r* next;
+} lnode;
+
+typedef struct node_r {
+	int value;
+	lnode* children;
+} node;
 
 lnode* make_lnode(node* value)
 {
