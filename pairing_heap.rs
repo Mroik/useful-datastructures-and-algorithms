@@ -1,3 +1,7 @@
+// TODO Change implementation when https://github.com/rust-lang/rust/issues/83163
+// is fixed (might look like a cheat but is the best way to keep it selfcontained).
+// Learnt about it here: https://github.com/apasel422/pairing-heap/blob/70af61645049fc0d64c02ac32dec672e0002bc6e/src/lib.rs#L21
+
 struct Node<'a> {
     value: i32,
     children: Vec<&'a mut Node<'a>>,
