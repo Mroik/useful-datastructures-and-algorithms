@@ -1,12 +1,11 @@
-#[derive(Debug)]
 struct Node<'a> {
     value: i32,
     children: Vec<&'a mut Node<'a>>,
 }
 
 impl<'a> Node<'a> {
-    fn new(value: i32) -> Box<Node<'a>> {
-        Box::new(Node { value, children: Vec::new() })
+    fn new(value: i32) -> Node<'a> {
+        Node { value, children: Vec::new() }
     }
 
     fn top(&self) -> i32 {
@@ -53,7 +52,7 @@ impl<'a> Node<'a> {
 // It's hard to keep track of all the lifetimes, this is a somewhat
 // ok example to reference in the future.
 fn main() {
-    let mut resources: Vec<Box<Node>> = Vec::new();
+    let mut resources: Vec<Node> = Vec::new();
     resources.push(Node::new(10));
     resources.push(Node::new(3));
     resources.push(Node::new(8));
@@ -65,7 +64,7 @@ fn main() {
     resources.push(Node::new(4));
     resources.push(Node::new(5));
 
-    let mut root = *resources.remove(0);
+    let mut root = resources.remove(0);
     let mut root_ref = &mut root;
 
     for x in resources.iter_mut() {
