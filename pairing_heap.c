@@ -1,27 +1,16 @@
 #include <stdlib.h>
 
-typedef struct lnode_r {
-	struct node_r* value;
-	struct lnode_r* next;
-} lnode;
-
 typedef struct node_r {
 	int value;
-	lnode* children;
+	struct node_r* next;
+	struct node_r* children;
 } node;
-
-lnode* make_lnode(node* value)
-{
-	lnode* new_node = malloc(sizeof(lnode));
-	new_node->value = value;
-	new_node->next = NULL;
-	return new_node;
-}
 
 node* make_node(int value)
 {
 	node* new_node = malloc(sizeof(node));
 	new_node->value = value;
+	new_node->next = NULL;
 	new_node->children = NULL;
 	return new_node;
 }
@@ -31,12 +20,12 @@ int top(node* root)
 	return root->value;
 }
 
-void add_children(lnode* root, node* child)
+void add_sibling(node* root, node* sibling)
 {
 	if(root->next == NULL)
-		root->next = make_lnode(child);
+		root->next = sibling;
 	else
-		add_children(root->next, child);
+		add_sibling(root->next, sibling);
 }
 
 node* meld(node* h1, node* h2)
@@ -47,20 +36,21 @@ node* meld(node* h1, node* h2)
 		return h2;
 	if(h2 == NULL)
 		return h1;
+
 	if(h1->value < h2->value)
 	{
 		if(h1->children == NULL)
-			h1->children = make_lnode(h2);
+			h1->children = h2;
 		else
-			add_children(h1->children, h2);
+			add_sibling(h1->children, h2);
 		return h1;
 	}
 	else
 	{
 		if(h2->children == NULL)
-			h2->children = make_lnode(h1);
+			h2->children = h1;
 		else
-			add_children(h2->children, h1);
+			add_sibling(h2->children, h1);
 		return h2;
 	}
 }
@@ -73,21 +63,19 @@ node* insert(node* root, int value)
 	return meld(root, new_node);
 }
 
-node* merge_pairs(lnode* root)
+node* merge_pairs(node* root)
 {
 	if(root == NULL)
 		return NULL;
 	if(root->next == NULL)
-	{
-		node* temp = root->value;
-		free(root);
-		return temp;
-	}
-	node* h1 = root->value;
-	node* h2 = root->next->value;
-	lnode* rest = root->next->next;
-	free(root->next);
-	free(root);
+		return root;
+
+	node* h1 = root;
+	node* h2 = root->next;
+	node* rest = root->next->next;
+
+	h1->next = NULL;
+	h2->next = NULL;
 	return meld(meld(h1, h2), merge_pairs(rest));
 }
 
@@ -95,7 +83,7 @@ node* pop(node* root)
 {
 	if(root == NULL)
 		return NULL;
-	lnode* temp = root->children;
+	node* temp = root->children;
 	free(root);
 	return merge_pairs(temp);
 }
