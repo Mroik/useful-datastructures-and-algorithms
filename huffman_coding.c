@@ -45,12 +45,25 @@ void sort(node** nodes, int size)
 	}
 }
 
-void count(char* string, int* counters)
+void count(char* string, int (*counters)[])
 {
 	for(int x = 0; x < 256; x++)
-		counters[x] = 0;
+		(*counters)[x] = 0;
 	for(int x = 0; string[x] != 0; x++)
-		counters[string[x]]++;
+		(*counters)[string[x]]++;
+}
+
+void bubble_sort(node** nodes, int size)
+{
+	for(int x = 0; x < size - 1; x++)
+	{
+		if(nodes[x]->freq > nodes[x + 1]->freq)
+		{
+			node* temp = nodes[x];
+			nodes[x] = nodes[x + 1];
+			nodes[x + 1] = temp;
+		}
+	}
 }
 
 // Assuming only ASCII
@@ -61,7 +74,7 @@ int make_tree(char* string, node*** nodes, node** root)
 	int tt;
 	int i_nodes = 0;
 
-	count(string, counters);
+	count(string, &counters);
 	for(int x = 0; x < 256; x++)
 	{
 		if(counters[x] != 0)
@@ -80,18 +93,48 @@ int make_tree(char* string, node*** nodes, node** root)
 		}
 	}
 
-	node** temp[tot_nodes];
+	node* n_array[tot_nodes];
+	node** temp = n_array;
 	for(int x = 0; x < tot_nodes; x++)
 		temp[x] = (*nodes)[x];
 
 	// Start generating tree
 	tt = tot_nodes;
 	sort(temp, tt);
-	while(tt < 2)
+	while(tt > 1)
 	{
 		temp[1] = make_father(temp[0], temp[1]);
 		temp++;
+		tt--;
+		bubble_sort(temp, tt);
 	}
 	*root = temp[0];
 	return tot_nodes;
+}
+
+void debug(node* root, int layer)
+{
+	if(root == NULL)
+		return;
+
+	if(root->left == NULL || root->right == NULL)
+		printf("char: %d freq: %d layer: %d\n", root->value, root->freq, layer);
+
+	if(root->left != NULL)
+		debug(root->left, layer + 1);
+	if(root->right != NULL)
+		debug(root->right, layer + 1);
+}
+
+int main()
+{
+	char* text = "Ciao come stai? Io sto bene e tu lo sai :D";
+	int size;
+	node** nodes;
+	node* root;
+
+	size = make_tree(text, &nodes, &root);
+	debug(root, 0);
+	for(int x = 0; x < size; x++)
+		printf("%d %d\n", nodes[x]->value, nodes[x]->freq);
 }
