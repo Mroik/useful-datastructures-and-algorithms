@@ -24,6 +24,8 @@ node* make_father(node* left, node* right)
 	node* father = make_node(0, left->freq + right->freq);
 	father->left = left;
 	father->right = right;
+	left->father = father;
+	right->father = father;
 	return father;
 }
 
@@ -112,13 +114,43 @@ int make_tree(char* string, node*** nodes, node** root)
 	return tot_nodes;
 }
 
+void encode(node* node, char* buffer, int offset)
+{
+	if(node->father == NULL)
+	{
+		buffer[offset] = 0;
+		for(int x = 0; x < offset / 2; x++)
+		{
+			char temp = buffer[x];
+			buffer[x] = buffer[offset - 1 - x];
+			buffer[offset - 1 - x] = temp;
+		}
+		return;
+	}
+
+	buffer[offset] = node->father->left == node ? '0' : '1';
+	encode(node->father, buffer, offset + 1);
+}
+
+char decode(node* root, char* buffer, int offset)
+{
+	if(buffer[offset] == 0)
+		return root->value;
+	if(buffer[offset] == '0')
+		decode(root->left, buffer, offset + 1);
+	else
+		decode(root->right, buffer, offset + 1);
+}
+
+// The implementation ends here
+
 void debug(node* root, int layer)
 {
 	if(root == NULL)
 		return;
 
 	if(root->left == NULL || root->right == NULL)
-		printf("char: %d freq: %d layer: %d\n", root->value, root->freq, layer);
+		printf("char: %c freq: %d layer: %d\n", root->value, root->freq, layer);
 
 	if(root->left != NULL)
 		debug(root->left, layer + 1);
@@ -126,6 +158,7 @@ void debug(node* root, int layer)
 		debug(root->right, layer + 1);
 }
 
+// Here an example of the usage
 int main()
 {
 	char* text = "Ciao come stai? Io sto bene e tu lo sai :D";
@@ -136,5 +169,16 @@ int main()
 	size = make_tree(text, &nodes, &root);
 	debug(root, 0);
 	for(int x = 0; x < size; x++)
-		printf("%d %d\n", nodes[x]->value, nodes[x]->freq);
+		printf("%c %d\n", nodes[x]->value, nodes[x]->freq);
+
+	char buf[8];
+	for(int x = 0; x < size; x++)
+	{
+		// Should cycle through text and search the corrisponding node
+		// for every character in text and then encode/decode. Too lazy
+		// to do that here.
+		encode(nodes[x], buf, 0);
+		printf("%c %s %c\n",nodes[x]->value, buf, decode(root, buf, 0));
+	}
+	// Remember to free the allocated memory (to lazy to do that here)
 }
