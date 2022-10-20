@@ -22,7 +22,7 @@ int top(node* root)
 
 void add_sibling(node* root, node* sibling)
 {
-	if(root->next == NULL)
+	if (root->next == NULL)
 		root->next = sibling;
 	else
 		add_sibling(root->next, sibling);
@@ -30,24 +30,21 @@ void add_sibling(node* root, node* sibling)
 
 node* meld(node* h1, node* h2)
 {
-	if(h1 == NULL && h2 == NULL)
+	if (h1 == NULL && h2 == NULL)
 		return NULL;
-	if(h1 == NULL)
+	if (h1 == NULL)
 		return h2;
-	if(h2 == NULL)
+	if (h2 == NULL)
 		return h1;
 
-	if(h1->value < h2->value)
-	{
-		if(h1->children == NULL)
+	if (h1->value < h2->value) {
+		if (h1->children == NULL)
 			h1->children = h2;
 		else
 			add_sibling(h1->children, h2);
 		return h1;
-	}
-	else
-	{
-		if(h2->children == NULL)
+	} else {
+		if (h2->children == NULL)
 			h2->children = h1;
 		else
 			add_sibling(h2->children, h1);
@@ -58,16 +55,16 @@ node* meld(node* h1, node* h2)
 node* insert(node* root, int value)
 {
 	node* new_node = make_node(value);
-	if(root == NULL)
+	if (root == NULL)
 		return new_node;
 	return meld(root, new_node);
 }
 
 node* merge_pairs(node* root)
 {
-	if(root == NULL)
+	if (root == NULL)
 		return NULL;
-	if(root->next == NULL)
+	if (root->next == NULL)
 		return root;
 
 	node* h1 = root;
@@ -81,7 +78,7 @@ node* merge_pairs(node* root)
 
 node* pop(node* root)
 {
-	if(root == NULL)
+	if (root == NULL)
 		return NULL;
 	node* temp = root->children;
 	free(root);

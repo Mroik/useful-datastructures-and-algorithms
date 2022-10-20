@@ -4,20 +4,19 @@ void sift_down(int* data, int index, int size)
 	int l, r;
 	int greater = i;
 
-	while(i < size)
-	{
+	while (i < size) {
 		l = i * 2 + 1;
 		r = i * 2 + 1;
-		if(l >= size)
+		if (l >= size)
 			break;
 
-		if(data[i] < data[l])
+		if (data[i] < data[l])
 			greater = l;
 
-		if(r < size && data[greater] < data[r])
+		if (r < size && data[greater] < data[r])
 			greater = r;
 
-		if(greater == i)
+		if (greater == i)
 			break;
 
 		int temp = data[greater];
@@ -29,7 +28,7 @@ void sift_down(int* data, int index, int size)
 
 int* make_heap(int* from, int size)
 {
-	for(int x = size - 1; x >= 0; x--)
+	for (int x = size - 1; x >= 0; x--)
 		sift_down(from, x, size);
 }
 

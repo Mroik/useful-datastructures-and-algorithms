@@ -40,20 +40,20 @@ node* build_father(node* left, node* right)
 	father->left = left;
 	father->right = right;
 
-	if(left != NULL)
+	if (left != NULL)
 		left->father = father;
-	if(right != NULL)
+	if (right != NULL)
 		right->father = father;
 	return father;
 }
 
 node* build_tree(node** nodes, int size)
 {
-	if(size == 0)
+	if (size == 0)
 		return NULL;
-	if(size == 1)
+	if (size == 1)
 		return nodes[0];
-	if(size == 2)
+	if (size == 2)
 		return build_father(nodes[0], nodes[1]);
 	return build_father(build_tree(nodes, size / 2), build_tree(nodes + size / 2, size - size / 2));
 }
@@ -61,9 +61,9 @@ node* build_tree(node** nodes, int size)
 int range_value(node* root, int start, int end)
 {
 	int left, right;
-	if(start == root->start && end == root->end)
+	if (start == root->start && end == root->end)
 		return root->value;
-	if(start >= end)
+	if (start >= end)
 		return 0;
 
 	left = root->left == NULL ? 0 : range_value(root->left, start, root->left->end);
@@ -75,6 +75,6 @@ void change_node_value(node* n, int value)
 {
 	int old_value = n->value;
 	n->value = value;
-	if(n->father != NULL)
+	if (n->father != NULL)
 		change_node_value(n->father, n->father->value - old_value + value);
 }

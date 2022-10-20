@@ -33,12 +33,9 @@ node* make_father(node* left, node* right)
 void sort(node** nodes, int size)
 {
 	node* temp;
-	for(int x = 0; x < size - 1; x++)
-	{
-		for(int y = x + 1; y < size; y++)
-		{
-			if(nodes[y]->freq < nodes[x]->freq)
-			{
+	for (int x = 0; x < size - 1; x++) {
+		for (int y = x + 1; y < size; y++) {
+			if (nodes[y]->freq < nodes[x]->freq) {
 				temp = nodes[y];
 				nodes[y] = nodes[x];
 				nodes[x] = temp;
@@ -49,18 +46,16 @@ void sort(node** nodes, int size)
 
 void count(char* string, int (*counters)[])
 {
-	for(int x = 0; x < 256; x++)
+	for (int x = 0; x < 256; x++)
 		(*counters)[x] = 0;
-	for(int x = 0; string[x] != 0; x++)
+	for (int x = 0; string[x] != 0; x++)
 		(*counters)[string[x]]++;
 }
 
 void bubble_sort(node** nodes, int size)
 {
-	for(int x = 0; x < size - 1; x++)
-	{
-		if(nodes[x]->freq > nodes[x + 1]->freq)
-		{
+	for (int x = 0; x < size - 1; x++) {
+		if (nodes[x]->freq > nodes[x + 1]->freq) {
 			node* temp = nodes[x];
 			nodes[x] = nodes[x + 1];
 			nodes[x + 1] = temp;
@@ -77,19 +72,16 @@ int make_tree(char* string, node*** nodes, node** root)
 	int i_nodes = 0;
 
 	count(string, &counters);
-	for(int x = 0; x < 256; x++)
-	{
-		if(counters[x] != 0)
+	for (int x = 0; x < 256; x++) {
+		if (counters[x] != 0)
 			tot_nodes++;
 	}
 
 	*nodes = malloc(sizeof(node*) * tot_nodes);
 
 	// Make array of nodes
-	for(int x = 0; x < 256; x++)
-	{
-		if(counters[x] != 0)
-		{
+	for (int x = 0; x < 256; x++) {
+		if (counters[x] != 0) {
 			(*nodes)[i_nodes] = make_node(x, counters[x]);
 			i_nodes++;
 		}
@@ -97,14 +89,13 @@ int make_tree(char* string, node*** nodes, node** root)
 
 	node* n_array[tot_nodes];
 	node** temp = n_array;
-	for(int x = 0; x < tot_nodes; x++)
+	for (int x = 0; x < tot_nodes; x++)
 		temp[x] = (*nodes)[x];
 
 	// Start generating tree
 	tt = tot_nodes;
 	sort(temp, tt);
-	while(tt > 1)
-	{
+	while (tt > 1) {
 		temp[1] = make_father(temp[0], temp[1]);
 		temp++;
 		tt--;
@@ -116,11 +107,9 @@ int make_tree(char* string, node*** nodes, node** root)
 
 void encode(node* node, char* buffer, int offset)
 {
-	if(node->father == NULL)
-	{
+	if (node->father == NULL) {
 		buffer[offset] = 0;
-		for(int x = 0; x < offset / 2; x++)
-		{
+		for (int x = 0; x < offset / 2; x++) {
 			char temp = buffer[x];
 			buffer[x] = buffer[offset - 1 - x];
 			buffer[offset - 1 - x] = temp;
@@ -134,9 +123,9 @@ void encode(node* node, char* buffer, int offset)
 
 char decode(node* root, char* buffer, int offset)
 {
-	if(buffer[offset] == 0)
+	if (buffer[offset] == 0)
 		return root->value;
-	if(buffer[offset] == '0')
+	if (buffer[offset] == '0')
 		decode(root->left, buffer, offset + 1);
 	else
 		decode(root->right, buffer, offset + 1);
@@ -146,15 +135,15 @@ char decode(node* root, char* buffer, int offset)
 
 void debug(node* root, int layer)
 {
-	if(root == NULL)
+	if (root == NULL)
 		return;
 
-	if(root->left == NULL || root->right == NULL)
+	if (root->left == NULL || root->right == NULL)
 		printf("char: %c freq: %d layer: %d\n", root->value, root->freq, layer);
 
-	if(root->left != NULL)
+	if (root->left != NULL)
 		debug(root->left, layer + 1);
-	if(root->right != NULL)
+	if (root->right != NULL)
 		debug(root->right, layer + 1);
 }
 
@@ -168,17 +157,16 @@ int main()
 
 	size = make_tree(text, &nodes, &root);
 	debug(root, 0);
-	for(int x = 0; x < size; x++)
+	for (int x = 0; x < size; x++)
 		printf("%c %d\n", nodes[x]->value, nodes[x]->freq);
 
 	char buf[8];
-	for(int x = 0; x < size; x++)
-	{
+	for (int x = 0; x < size; x++) {
 		// Should cycle through text and search the corrisponding node
 		// for every character in text and then encode/decode. Too lazy
 		// to do that here.
 		encode(nodes[x], buf, 0);
-		printf("%c %s %c\n",nodes[x]->value, buf, decode(root, buf, 0));
+		printf("%c %s %c\n", nodes[x]->value, buf, decode(root, buf, 0));
 	}
 	// Remember to free the allocated memory (to lazy to do that here)
 }
