@@ -149,7 +149,7 @@ void debug(node* root, int layer)
 }
 
 int load_from_file(char** buffer) {
-	FILE* fp = fopen("commedia.txt", "r");
+	FILE* fp = fopen("../commedia.txt", "r");
 	fseek(fp, 0, SEEK_END);
 	int size = ftell(fp);
 	*buffer = malloc(sizeof(char) * size);
@@ -187,7 +187,7 @@ int main()
 	// for every character in text and then encode/decode. Too lazy
 	// to do that here.
 	char buf[20];
-	for (int x = 0; x < size - 1; x++) {
+	for (int x = 0; x < size; x++) {
 		encode(nodes[x], buf, 0);
 		printf("%c %s %c\n", nodes[x]->value, buf, decode(root, buf, 0));
 	}
