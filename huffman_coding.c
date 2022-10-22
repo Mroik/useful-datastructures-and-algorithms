@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 typedef struct node_r {
 	char value;
@@ -147,24 +148,46 @@ void debug(node* root, int layer)
 		debug(root->right, layer + 1);
 }
 
+int load_from_file(char** buffer) {
+	FILE* fp = fopen("commedia.txt", "r");
+	fseek(fp, 0, SEEK_END);
+	int size = ftell(fp);
+	*buffer = malloc(sizeof(char) * size);
+	rewind(fp);
+	for(int x = 0; x < size; x++)
+		(*buffer)[x] = fgetc(fp);
+	fclose(fp);
+	return size;
+}
+
+// Newlines mess up the output on the summary
+void strip_newline(char* buffer) {
+	for (int x = 0; buffer[x] != 0; x++) {
+		if (buffer[x] == 0xA || buffer[x] == 0xD)
+			buffer[x] = ' ';
+	}
+}
+
 // Here an example of the usage
 int main()
 {
-	char* text = "Ciao come stai? Io sto bene e tu lo sai :D";
+	char* text;
 	int size;
 	node** nodes;
 	node* root;
 
+	load_from_file(&text);
+	strip_newline(text);
 	size = make_tree(text, &nodes, &root);
 	debug(root, 0);
 	for (int x = 0; x < size; x++)
 		printf("%c %d\n", nodes[x]->value, nodes[x]->freq);
 
-	char buf[8];
-	for (int x = 0; x < size; x++) {
-		// Should cycle through text and search the corrisponding node
-		// for every character in text and then encode/decode. Too lazy
-		// to do that here.
+	// Should cycle through text and search the corrisponding node
+	// for every character in text and then encode/decode. Too lazy
+	// to do that here.
+	char buf[20];
+	for (int x = 0; x < size - 1; x++) {
 		encode(nodes[x], buf, 0);
 		printf("%c %s %c\n", nodes[x]->value, buf, decode(root, buf, 0));
 	}
