@@ -2,13 +2,15 @@ use std::{cell::{RefCell, RefMut}, mem};
 
 struct Node<T> {
     value: T,
+    priority: i32,
     children: RefCell<Vec<Box<Node<T>>>>,
 }
 
-impl<T: Copy + Ord> Node<T> {
-    fn new(value: T) -> Node<T> {
+impl<T: Copy> Node<T> {
+    fn new(value: T, priority: i32) -> Node<T> {
         Node {
             value,
+            priority,
             children: RefCell::new(vec![]),
         }
     }
@@ -18,7 +20,7 @@ impl<T: Copy + Ord> Node<T> {
     }
 
     fn meld(&mut self, mut h2: Box<Node<T>>) {
-        if self.value < h2.value {
+        if self.priority < h2.priority {
             self.children.borrow_mut().push(h2);
             return;
         }
@@ -26,24 +28,20 @@ impl<T: Copy + Ord> Node<T> {
         self.children.borrow_mut().push(h2);
     }
 
-    fn push(&mut self, value: T) {
-        let other = Node::new(value);
+    fn push(&mut self, value: T, priority: i32) {
+        let other = Node::new(value, priority);
         self.meld(Box::new(other));
     }
 
     fn merge_pairs(mut nodes: RefMut<Vec<Box<Node<T>>>>) -> Option<Box<Node<T>>> {
-        let mut n1;
-        let n2;
-        {
-            if nodes.is_empty() {
-                return None;
-            }
-            if nodes.len() == 1 {
-                return Some(nodes.remove(0));
-            }
-            n1 = nodes.remove(0);
-            n2 = nodes.remove(0);
+        if nodes.is_empty() {
+            return None;
         }
+        if nodes.len() == 1 {
+            return Some(nodes.remove(0));
+        }
+        let mut n1 = nodes.remove(0);
+        let n2 = nodes.remove(0);
 
         match Node::merge_pairs(nodes) {
             None => {
@@ -68,19 +66,19 @@ struct PriorityQueue<T> {
     root: Option<Box<Node<T>>>,
 }
 
-impl<T: Copy + Ord> PriorityQueue<T> {
+impl<T: Copy> PriorityQueue<T> {
     fn new() -> Self {
         PriorityQueue {
             root: None,
         }
     }
 
-    fn push(&mut self, value: T) {
+    fn push(&mut self, value: T, priority: i32) {
         if let Some(rr) = &mut self.root {
-            (*rr).push(value);
+            rr.push(value, priority);
             return;
         }
-        self.root = Some(Box::new(Node::new(value)));
+        self.root = Some(Box::new(Node::new(value, priority)));
     }
 
     fn top(&self) -> Option<T> {
@@ -100,17 +98,17 @@ impl<T: Copy + Ord> PriorityQueue<T> {
 }
 
 fn main() {
-    let mut queue: PriorityQueue<i32> = PriorityQueue::new();
-    queue.push(10);
-    queue.push(3);
-    queue.push(8);
-    queue.push(7);
-    queue.push(1);
-    queue.push(6);
-    queue.push(2);
-    queue.push(9);
-    queue.push(4);
-    queue.push(5);
+    let mut queue: PriorityQueue<&str> = PriorityQueue::new();
+    queue.push("Ten", 10);
+    queue.push("Three", 3);
+    queue.push("Eight", 8);
+    queue.push("Seven", 7);
+    queue.push("One", 1);
+    queue.push("Six", 6);
+    queue.push("Two", 2);
+    queue.push("Nine", 9);
+    queue.push("Four", 4);
+    queue.push("Five", 5);
 
     for _ in 0..10 {
         println!("{}", queue.top().unwrap());
