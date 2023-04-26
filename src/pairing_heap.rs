@@ -20,11 +20,9 @@ impl<T: Copy> Node<T> {
     }
 
     fn meld(&mut self, mut h2: Box<Node<T>>) {
-        if self.priority < h2.priority {
-            self.children.borrow_mut().push(h2);
-            return;
+        if !(self.priority < h2.priority) {
+            mem::swap(self, &mut h2);
         }
-        mem::swap(self, &mut h2);
         self.children.borrow_mut().push(h2);
     }
 
